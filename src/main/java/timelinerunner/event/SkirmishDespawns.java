@@ -13,7 +13,8 @@ public class SkirmishDespawns implements TimelineEvent {
     private final Town town;
 
     @Override
-    public void occur() {
-        town.despawnSkirmish(timeOfOccurrence, skirmish);
+    public Town happenToTown(Town town) {
+        // TODO
+        return town;
     }
 }
