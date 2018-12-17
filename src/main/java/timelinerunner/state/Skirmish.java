@@ -1,24 +1,22 @@
 package timelinerunner.state;
 
-import lombok.Value;
-import timelinerunner.TimelineConfig;
-import timelinerunner.event.SkirmishDespawns;
-import timelinerunner.event.TimelineEvent;
-
 import java.time.Instant;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
+
+import TheOutsideWorld.GameConfig;
+import TheOutsideWorld.TileId;
+import lombok.Value;
+import timelinerunner.occurrence.Occurrence;
+import timelinerunner.occurrence.SkirmishDespawns;
 
 @Value
-public class Skirmish implements EvolvesWithTime{
-    Town town; // TODO: This is actually awful. It's a circular dependency. I need a totally different approach.
+public class Skirmish implements CausesOccurrences {
     Instant startTime;
-    int tileId;
+    TileId tileId;
 
-
-    @Override
-    public List<TimelineEvent> getDestiny() {
-        Instant despawnTime = startTime.plus(TimelineConfig.SKIRMISH_TTL);
-        return Collections.singletonList(new SkirmishDespawns(despawnTime, this, town));
+    @Override public Set<Occurrence> getOccurrences() {
+        Instant despawnTime = startTime.plus(GameConfig.SKIRMISH_TTL);
+        return Collections.singleton(new SkirmishDespawns(despawnTime, this));
     }
 }

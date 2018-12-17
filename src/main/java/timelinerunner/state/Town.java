@@ -1,22 +1,37 @@
 package timelinerunner.state;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
+
 import lombok.Value;
 import lombok.experimental.Wither;
-import timelinerunner.event.TimelineEvent;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import timelinerunner.occurrence.Occurrence;
+import timelinerunner.occurrence.SkirmishSpawns;
 
 @Value
-public class Town implements EvolvesWithTime{
-    @Wither private final Instant currentTime;
-
+@Wither
+public class Town implements CausesOccurrences {
+    private final Set<Skirmish> skirmishes;
+    private final Instant lastSkirmishSpawned;
+    private final Duration skirmishSpawnCooldown;
 
     @Override
-    public List<TimelineEvent> getDestiny() {
-        // TODO
-        return new ArrayList<>();
+    public Set<Occurrence> getOccurrences() {
+        Set<Occurrence> occurrences = new HashSet<>();
+
+        occurrences.add(nextSkirmishSpawns());
+
+        for (Skirmish skirmish : skirmishes) {
+            occurrences.addAll(skirmish.getOccurrences());
+        }
+
+        return occurrences;
+    }
+
+    private Occurrence nextSkirmishSpawns() {
+        return new SkirmishSpawns(lastSkirmishSpawned.plus(skirmishSpawnCooldown));
     }
 
 }
